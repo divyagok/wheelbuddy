@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wheel Buddy - Signup</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-image: url('./blurred_image.png');
+        background-size: cover;
+        background-position: center;
+      }
+
+      .header {
+        background-color: #032d5a;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #f0f0f0;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .header img {
+        height: 50px;
+      }
+
+      .main-content-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin-top: 80px; /* Adjusted to create space for the header */
+        padding: 20px;
+      }
+
+      .signup-box {
+        background-color: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: left;
+        max-width: 700px;
+        width: 95%;
+      }
+
+      .signup-box h2 {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+      }
+
+      .form-group input {
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-top: 5px;
+      }
+
+      .form-group input[type="file"] {
+        padding: 5px;
+      }
+
+      .signup-box button {
+        background-color: #1e90ff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+      }
+
+      .signup-box button:hover {
+        background-color: #0056b3;
+      }
+
+      .login-link {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      .login-link a {
+        color: #1e90ff;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      .login-link a:hover {
+        text-decoration: underline;
+      }
+
+      .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: none;
+        text-align: center;
+      }
+
+      .popup button {
+        background-color: #1e90ff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .popup button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-arrow-left text-white me-3"></i>
+        <i class="fas fa-home text-white"></i>
+      </div>
+      <div class="d-flex align-items-center">
+        <img
+          alt="Wheel Buddy logo"
+          src="./wb.png"
+          width="100"
+        />
+        <div class="dropdown ms-3">
+          <i
+            class="fas fa-user-circle text-white dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            style="cursor: pointer; font-size: 24px"
+          ></i>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content-container">
+      <div class="signup-box">
+        <h2>Sign Up</h2>
+        <form id="signupForm" action="api/signup.php" method="post" enctype='multipart/form-data'>
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" name="First_Name" id="firstName" placeholder="Enter First Name" required />
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" name="Last_name" id="lastName" placeholder="Enter Last Name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" name="Email" id="email" placeholder="Enter Email" required />
+          </div>
+          <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="tel" name="Phone_number" id="phoneNumber" placeholder="Enter Phone Number" required />
+          </div>
+          <div class="form-group">
+            <label for="profilePhoto">Profile Photo (Optional)</label>
+            <input type="file" name="profile_photo" id="profilePhoto" />
+          </div>
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" name="Username" id="username" placeholder="Enter Username" required />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" name="Password" id="password" placeholder="Enter Password" required />
+          </div>
+          <button type="submit">Submit</button>
+        </form>
+        <div class="login-link">
+          Already a member? <a href="login.html">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="popup" id="successPopup">
+      <p>Account created successfully!</p>
+      <button onclick="closePopup()">OK</button>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+    <!-- <script>
+      const signupForm = document.getElementById('signupForm');
+      const successPopup = document.getElementById('successPopup');
+
+      signupForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        successPopup.style.display = 'block';
+      });
+
+      function closePopup() {
+        successPopup.style.display = 'none';
+      }
+    </script> -->
+  </body>
+</html>

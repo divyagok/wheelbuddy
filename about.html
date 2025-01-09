@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us - Wheel Buddy</title>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+      }
+      .header {
+        background-color: #032d5a;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #f0f0f0;
+      }
+      .header img {
+        height: 50px;
+      }
+      .about-section {
+        padding: 60px 20px;
+        background-color: #ffffff;
+      }
+      .about-section h1 {
+        color: #032d5a;
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+      .about-section p {
+        color: #333;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        margin-bottom: 20px;
+      }
+      .about-section .mission {
+        background-color: #ecf0f1;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header">
+      <div class="d-flex align-items-center">
+        <a href="newhome.html"><i class="fas fa-arrow-left text-white me-3"></i></a>
+        <a href="newhome.html"><i class="fas fa-home text-white"></i></a>
+      </div>
+      <div class="d-flex align-items-center">
+        <img src="./wb.png" alt="Wheel Buddy Logo" />
+        <div class="dropdown ms-3">
+          <i
+            class="fas fa-user-circle text-white dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            style="cursor: pointer; font-size: 24px"
+          ></i>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Login</a></li>
+            <li><a class="dropdown-item" href="#">Sign Up</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <section class="about-section text-center">
+      <div class="container">
+        <h1>About Wheel Buddy</h1>
+        <p>
+          At <strong>Wheel Buddy</strong>, we believe in building a community where
+          ride-sharing becomes a seamless, safe, and eco-friendly experience for
+          everyone. Our platform connects drivers and passengers, allowing them
+          to share rides conveniently while cutting down on travel costs and
+          reducing carbon footprints.
+        </p>
+        <p>
+          With Wheel Buddy, you can trust in a system designed to prioritize
+          safety, affordability, and sustainability. Whether you’re commuting to
+          work, heading to a special event, or just exploring, Wheel Buddy is
+          here to make your journey easier and more enjoyable.
+        </p>
+        <div class="mission mt-4">
+          <h2>Our Mission</h2>
+          <p>
+            To redefine transportation by promoting a ride-sharing culture that
+            benefits individuals, communities, and the environment.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

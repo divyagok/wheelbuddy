@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAQ - Wheel Buddy</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-image: url('./blurred_image.png'); /* Add your background image */
+        background-size: cover;
+        background-position: center;
+        min-height: 100vh;
+        color: #333;
+      }
+
+      .header {
+        background-color: #032d5a;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #f0f0f0;
+      }
+
+      .header img {
+        height: 50px;
+      }
+
+      /* FAQ Section */
+      .faq-section {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        max-width: 800px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 30px auto;
+      }
+
+      .faq-section h1 {
+        font-weight: bold;
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+      }
+
+      .faq-item {
+        background: rgb(176, 216, 249);
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        width: 100%;
+      }
+
+      .faq-item h5 {
+        font-weight: bold;
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+
+      .faq-item p {
+        font-size: 1rem;
+        color: #555;
+      }
+
+      .faq-item:hover {
+        background: #f7f9fb;
+      }
+
+      /* Header Dropdown */
+      .dropdown-menu {
+        background-color: #f0f0f0;
+      }
+
+      .dropdown-menu a {
+        color: #000000; /* Change the text color to black */
+      }
+
+      .dropdown-menu a:hover {
+        background-color: #97c8ff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-arrow-left text-white me-3"></i>
+        <i class="fas fa-home text-white"></i>
+      </div>
+      <div class="d-flex align-items-center">
+        <img
+          alt="Wheel Buddy logo"
+          src="./wb.png"
+          width="100"
+        />
+        <div class="dropdown ms-3">
+          <i
+            class="fas fa-user-circle text-white dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            style="cursor: pointer; font-size: 24px"
+          ></i>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Body -->
+    <div class="faq-section">
+      <h1 class="text-dark">Frequently Asked Questions</h1>
+      <div class="faq-item">
+        <h5>1. How does Wheel Buddy work?</h5>
+        <p>Wheel Buddy allows users to rent and share cars within their community, offering a simple, secure platform for both car owners and renters.</p>
+      </div>
+      <div class="faq-item">
+        <h5>2. How do I register on Wheel Buddy?</h5>
+        <p>You can sign up using your email or social media accounts through the registration page on our website.</p>
+      </div>
+      <div class="faq-item">
+        <h5>3. How do I rent a car?</h5>
+        <p>After signing in, browse the available cars in your area, select your desired car, and book it for your preferred time period.</p>
+      </div>
+      <div class="faq-item">
+        <h5>4. What payment methods are accepted?</h5>
+        <p>We accept credit/debit cards, PayPal, and other online payment methods for bookings.</p>
+      </div>
+      <div class="faq-item">
+        <h5>5. Can I cancel my booking?</h5>
+        <p>Yes, you can cancel your booking up to 24 hours before the scheduled pickup time for a full refund.</p>
+      </div>
+      <div class="faq-item">
+        <h5>6. Is insurance included in the rental?</h5>
+        <p>Yes, all our rentals come with comprehensive insurance coverage for peace of mind.</p>
+      </div>
+      <div class="faq-item">
+        <h5>7. How do I contact customer support?</h5>
+        <p>You can reach our customer support team via email, phone, or our live chat service on the website.</p>
+      </div>
+      <div class="faq-item">
+        <h5>8. Can I share my car with others?</h5>
+        <p>Yes, you can make your car available for sharing within the community, earning money from your vehicle.</p>
+      </div>
+      <div class="faq-item">
+        <h5>9. How do I manage my bookings?</h5>
+        <p>You can manage your bookings through your user dashboard, where you can view, modify, or cancel your reservations.</p>
+      </div>
+      <div class="faq-item">
+        <h5>10. Are there any age restrictions for renting a car?</h5>
+        <p>Yes, renters must be at least 21 years old with a valid driver's license to rent a car through Wheel Buddy.</p>
+      </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

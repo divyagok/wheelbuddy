@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wheel Buddy - Login</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-image: url('./blurred_image.png'); /* Replace with your background image */
+        background-size: cover;
+        background-position: center;
+      }
+
+      .header {
+        background-color: #032d5a;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #f0f0f0;
+      }
+
+      .header img {
+        height: 50px;
+      }
+
+      .main-content-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: calc(100vh - 70px);
+      }
+
+      .login-box {
+        background-color: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 400px;
+        width: 100%;
+      }
+
+      .login-box h2 {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+
+      .login-box input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+      }
+
+      .login-box button {
+        background-color: #1e90ff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+      }
+
+      .login-box button:hover {
+        background-color: #0056b3;
+      }
+
+      .signup-link {
+        margin-top: 15px;
+        font-size: 14px;
+      }
+
+      .signup-link a {
+        color: #1e90ff;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      .signup-link a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header">
+      <div class="d-flex align-items-center">
+        <a href="./welcome.html" ><i class="fas fa-arrow-left text-white me-3"></i></a>
+        <a href="./newhome.html" ><i class="fas fa-home text-white"></i></a>
+      </div>
+      <div class="d-flex align-items-center">
+        <img
+          alt="Wheel Buddy logo"
+          src="./wb.png"
+          width="100"
+        />
+        <div class="dropdown ms-3">
+          <i
+            class="fas fa-user-circle text-white dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            style="cursor: pointer; font-size: 24px"
+          ></i>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="./settings.html">Settings</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <div class="main-content-container">
+      <div class="login-box">
+        <h2>Login</h2>
+        <form method="POST" action="api/login.php">
+          <input type="text" name="username" placeholder="Enter Username" required />
+          <input type="password" name="password" placeholder="Enter Password" required />
+         <a href="./og.html"> <button type="submit">Login</button></a>   
+        </form>
+        <div class="signup-link">
+          Not a member yet? <a href="./signup.html">Sign Up</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
