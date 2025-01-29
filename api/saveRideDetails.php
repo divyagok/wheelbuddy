@@ -12,7 +12,7 @@ try {
 
 
     // Validate the data
-    if (!isset($data['liveLocation'], $data['pickupLocation'], $data['dropLocation'], $data['availableSeats'])) {
+    if (!isset($data['liveLocation'], $data['pickupLocation'], $data['dropLocation'], $data['availableSeats'], $data['car_name'],$data['car_reg_no'], $data['pickup_time'])) {
         http_response_code(400);
         echo json_encode(['error' => 'Invalid input data']);
     
@@ -22,7 +22,10 @@ try {
     $liveLng = $data['liveLocation']['lng'];
     $pickupLocation = $data['pickupLocation'];
     $dropLocation = $data['dropLocation'];
+    $car_name = $data['car_name'];
+    $car_reg_no = $data['car_reg_no'];
     $availableSeats = $data['availableSeats'];
+    $pickuptime = $data['pickup_time'];
 
 
 
@@ -31,8 +34,8 @@ try {
     }
     
     // Prepare SQL query to insert the file info into the database
-    $stmt = $conn->prepare("INSERT INTO driver_db (driver_id, available_seats, pickup_location, drop_location, pickup_latitude, pickup_longitude) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssss", $user_id, $availableSeats, $pickupLocation, $dropLocation, $liveLat, $liveLng);
+    $stmt = $conn->prepare("INSERT INTO driver_db (driver_id, available_seats, pickup_location, drop_location, pickup_latitude, pickup_longitude, car_name, car_reg_no, pickup_time) VALUES (?, ?, ?, ?, ?, ?,?,?,?)");
+    $stmt->bind_param("sssssssss", $user_id, $availableSeats, $pickupLocation, $dropLocation, $liveLat, $liveLng,$car_name , $car_reg_no, $pickuptime);
 
     // Execute the query
     if (!$stmt->execute()) {

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Choose Your Ride - Wheel Buddy</title>
+    <title>Subscription Details - Wheel Buddy</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Bootstrap CSS -->
@@ -38,85 +38,66 @@
         height: 50px;
       }
 
-      .choose-container {
+      .subscription-container {
         background: rgba(255, 255, 255, 0.9);
         padding: 30px;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        max-width: 900px;
+        max-width: 800px;
         width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-top: 20px;
       }
 
-      .choose-container h1 {
+      .subscription-container h1 {
         font-weight: bold;
         font-size: 2.5rem;
         margin-bottom: 30px;
       }
 
-      .choose-boxes {
-        display: flex;
-        gap: 20px;
-        width: 100%;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-
-      .choose-box {
+      .plan-card {
         background: rgba(240, 240, 240, 1);
         padding: 20px;
         border-radius: 10px;
-        flex: 1;
-        max-width: 350px;
-        min-width: 250px;
         text-align: center;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-        transition: transform 0.3s;
       }
 
-      .choose-box:hover {
-        transform: scale(1.05);
-      }
-
-      .choose-box h2 {
+      .plan-card h3 {
         font-weight: bold;
-        font-size: 1.75rem;
-        margin-bottom: 20px;
+        font-size: 1.5rem;
+        margin-bottom: 10px;
       }
 
-      .choose-box p {
+      .plan-card p {
+        margin: 5px 0;
         font-size: 1rem;
         color: #555;
-        margin-bottom: 15px;
       }
 
-      .choose-box .btn {
+      .plan-card .btn-subscribe {
         background-color: #032d5a;
         color: #fff;
-        padding: 10px 20px;
-        border-radius: 5px;
+        padding: 10px 15px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
         font-size: 1rem;
         text-decoration: none;
-        transition: background-color 0.3s;
+        display: inline-block;
+        transition: background 0.3s;
       }
 
-      .choose-box .btn:hover {
+      .plan-card .btn-subscribe:hover {
         background-color: #0262a1;
       }
 
-      .choose-box i {
-        font-size: 2rem;
-        margin-bottom: 15px;
-        color: #032d5a;
-      }
-
-      @media (max-width: 768px) {
-        .choose-boxes {
-          flex-direction: column;
-        }
+      .plan-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        width: 100%;
       }
     </style>
   </head>
@@ -152,23 +133,32 @@
 
     <!-- Body -->
     <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 70px)">
-      <div class="choose-container">
-        <h1 class="text-dark">Choose Your Ride Type</h1>
-        <div class="choose-boxes">
-          <!-- Offer a Ride -->
-          <div class="choose-box">
-            <i class="fas fa-car-side"></i>
-            <h2 class="text-dark">Offer a Ride</h2>
-            <p>Help fellow riders by offering a ride to your destination. Earn rewards and make someone's journey easier!</p>
-            <a href="provider_avilability.html" class="btn">Offer a Ride Now</a>
+      <div class="subscription-container">
+        <h1 class="text-dark">Choose Your Subscription Plan</h1>
+        <div class="plan-grid">
+          <div class="plan-card">
+            <i class="fas fa-calendar-week plan-icon"></i>
+            <h3 class="plan-title">Silver Plan</h3>
+            <p>Weekly Plan (5 days)</p>
+            <p class="price">₹99</p>
+            <p>20% off on all rides</p>
+            <button class="btn btn-subscribe w-100">Subscribe</button>
           </div>
-
-          <!-- Get a Ride -->
-          <div class="choose-box">
-            <i class="fas fa-user-tie"></i>
-            <h2 class="text-dark">Get a Ride</h2>
-            <p>Need a lift? Choose from available rides heading your way. Enjoy a comfortable and affordable journey.</p>
-            <a href="user1.html" class="btn">Find a Ride</a>
+          <div class="plan-card">
+            <i class="fas fa-calendar-alt plan-icon"></i>
+            <h3 class="plan-title">Gold Plan</h3>
+            <p>Monthly Plan (28 days)</p>
+            <p class="price">₹199</p>
+            <p>25% off on all rides</p>
+            <button class="btn btn-subscribe w-100">Subscribe</button>
+          </div>
+          <div class="plan-card">
+            <i class="fas fa-gem plan-icon"></i>
+            <h3 class="plan-title">Platinum Plan</h3>
+            <p>3-Month Plan (89 days)</p>
+            <p class="price">₹299</p>
+            <p>30% off on all rides</p>
+            <button class="btn btn-subscribe w-100">Subscribe</button>
           </div>
         </div>
       </div>

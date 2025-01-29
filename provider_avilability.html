@@ -118,7 +118,7 @@ defer
       }
     </style>
   </head>
-  <body>
+  <body> 
     <!-- Header -->
     <div class="header">
       <div class="d-flex align-items-center">
@@ -151,31 +151,68 @@ defer
     <!-- Main Container -->
     <div class="main-container">
       <!-- Ride Details -->
-      <div class="input-box">
-        <h2 class="text-dark">Ride Details</h2>
-        <!-- Pickup Location -->
-        <input
-          type="text"
-          placeholder="Enter your pickup location"
-          id="pickup-location"
-        />
-        <!-- Drop Location -->
-        <input
-          type="text"
-          placeholder="Enter your drop location"
-          id="drop-location"
-        />
-        <!-- Available Seats -->
-        <label for="seats-available" class="text-dark">Available Seats</label>
-        <select id="seats-available">
-          <option value="1">1 Seat</option>
-          <option value="2">2 Seats</option>
-          <option value="3">3 Seats</option>
-          <option value="4">4 Seats</option>
-          <option value="5">5 Seats</option>
-        </select>
+<div class="input-box">
+  <h2 class="text-dark">Find a Ride</h2>
+  <!-- Pickup Location -->
+  <input
+    type="text"
+    placeholder="Enter your pickup location"
+    id="pickup-location"
+    class="form-control mb-3"
+    style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem;"
+  />
+  <!-- Drop Location -->
+  <input
+    type="text"
+    placeholder="Enter your drop location"
+    id="drop-location"
+    class="form-control mb-3"
+    style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem;"
+  />
+  <!-- Car Name -->
+  <input
+    type="text"
+    placeholder="Enter your car name"
+    id="car-name"
+    class="form-control mb-3"
+    style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem;"
+  />
+  <!-- Car Registration Number -->
+  <input
+    type="text"
+    placeholder="Enter your car registration number"
+    id="car-reg-no"
+    class="form-control mb-3"
+    style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem;"
+  />
+  <!-- Available Seats -->
+  <label for="seats-available" class="text-dark">Available Seats</label>
+  <select
+    id="seats-available"
+    class="form-control mb-3"
+    style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem;"
+  >
+    <option value="1">1 Seat</option>
+    <option value="2">2 Seats</option>
+    <option value="3">3 Seats</option>
+    <option value="4">4 Seats</option>
+    <option value="5">5 Seats</option>
+  </select>
+  <!-- Pickup Time -->
+  <div class="form-group mb-3">
+    <label for="pickup-time" class="text-dark">Pickup Time</label>
+    <input
+      type="datetime-local"
+      id="pickup-time"
+      class="form-control"
+      style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem;"
+    />
+  </div>
+  
         <!-- Submit Button -->
+         <a href="./demo.html"></a>
         <button class="btn" onclick="saveDetails()">Offer Ride</button>
+      </a>
       </div>
     
       <!-- Map -->
@@ -232,9 +269,12 @@ defer
       function saveDetails() {
         const pickupLocation = document.getElementById("pickup-location").value;
         const dropLocation = document.getElementById("drop-location").value;
+        const car_name = document.getElementById("car-name").value;
+        const car_reg_no = document.getElementById("car-reg-no").value;
+        const pickup_time = document.getElementById("pickup-time").value;
         const availableSeats = document.getElementById("seats-available").value;
     
-        if (!pickupLocation || !dropLocation || !availableSeats) {
+        if (!pickupLocation || !dropLocation || !car_name||!car_reg_no||!pickup_time|| !availableSeats) {
           alert("Please fill in all the fields.");
           return;
         }
@@ -243,8 +283,11 @@ defer
           liveLocation: userLocation,
           pickupLocation,
           dropLocation,
+          car_name,
+          car_reg_no,
+          pickup_time,
           availableSeats,
-        };
+        }; 
     
         // AJAX POST request
         fetch("api/saveRideDetails.php", {
@@ -252,7 +295,7 @@ defer
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(data), 
         })
           .then((response) => {
             if (!response.ok) {
@@ -263,6 +306,7 @@ defer
           .then((result) => {
             alert("Ride details saved successfully!");
             console.log(result);
+            window.location.href = "demo.html";
           })
           .catch((error) => {
             alert("Error saving ride details.");
@@ -275,3 +319,4 @@ defer
     
   </body>
 </html>
+
