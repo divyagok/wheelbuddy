@@ -195,21 +195,27 @@
       }
 
       function geocodeAndMark(address, name) {
-        geocoder.geocode({ address: address }, (results, status) => {
-          if (status === "OK") {
-            const location = results[0].geometry.location;
+  geocoder.geocode({ address: address }, (results, status) => {
+    if (status === "OK") {
+      const location = results[0].geometry.location;
 
-            new google.maps.Marker({
-              position: location,
-              map: map,
-              title: `${name}'s Pickup Location: ${address}`,
-              icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-            });
-          } else {
-            console.error(`Geocode failed for ${address}: ${status}`);
-          }
-        });
-      }
+      new google.maps.Marker({
+        position: location,
+        map: map,
+        title: `${name}'s Pickup Location: ${address}`,
+        icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+      });
+
+      // Redirect to the next page after setting the marker
+      setTimeout(() => {
+        window.location.href = "welcome.html"; // Replace with your actual page URL
+      }, 2000); // Redirect after 2 seconds (optional delay)
+      
+    } else {
+      console.error(`Geocode failed for ${address}: ${status}`);
+    }
+  });
+}
 
       function acceptRequest(pickup, drop) {
         alert(`Accepted ride request from ${pickup} to ${drop}`);
