@@ -1,3 +1,6 @@
+<?php
+include('api/config.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -177,33 +180,52 @@
   <div class="main-container">
     <!-- Left Side - Driver Details -->
     <div class="drivers-container">
-      <div class="driver-card">
-        <img src="./car1.jpg" alt="Car" />
-        <div class="driver-details">
-          <h4>Honda City</h4>
-          <p><strong>Driver:</strong> John Doe</p>
-          <p><strong>Car Reg No:</strong> TN09AB1234</p>
-          <p><strong>Seats Available:</strong> 3</p>
-          <p><strong>Price per Seat:</strong> ₹250</p>
-        </div>
-        <a href="user2.html">
-        <button onclick="bookNow('Honda City', 'John Doe', 'TN09AB1234', 3, 250, { lat: 20.5947, lng: 78.9645 })">Book Now</button>
-      </a>
-      </div>
+    <?php
+    $query = "SELECT * FROM driver_db WHERE driver_id !='no data' AND ride_status='Not Started'";
 
-      <div class="driver-card">
-        <img src="./car2.jpg" alt="Car" />
-        <div class="driver-details">
-          <h4>Toyota Innova</h4>
-          <p><strong>Driver:</strong> Jane Smith</p>
-          <p><strong>Car Reg No:</strong> TN10XY5678</p>
-          <p><strong>Seats Available:</strong> 4</p>
-          <p><strong>Price per Seat:</strong> ₹400</p>
-        </div>
-        <a href="user2.html">
-        <button onclick="bookNow('Toyota Innova', 'Jane Smith', 'TN10XY5678', 4, 400, { lat: 20.5950, lng: 78.9650 })">Book Now</button>
-      </a>
-      </div>
+    // Execute Query
+    $result = $conn->query($query);
+    
+    // Check if the query execution failed
+    if (!$result) {
+        die("Query Error: " . $conn->error);  // This will show the actual MySQL error
+    }
+    
+    // Check if rows exist
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            // Fetch dynamic data
+            $driver_name = htmlspecialchars($row['driver_name']);
+             $car_model = htmlspecialchars($row['car_name']);
+             $car_reg_no = htmlspecialchars($row['car_reg_no']);
+             $seats_available = (int) $row['available_seats'];
+             $price_per_seat = (int) $row['price_per_seat'];
+             $latitude = (float) $row['pickup_latitude'];  // Ensure these values exist in your DB
+             $longitude = (float) $row['pickup_longitude'];
+    
+            echo "<div class='driver-card'>
+                <img src='./car1.jpg' alt='Car' />
+                <div class='driver-details'>
+                    <h4>{$car_model}</h4>
+                    <p><strong>Driver:</strong> {$driver_name}</p>
+                    <p><strong>Car Reg No:</strong> {$car_reg_no}</p>
+                    <p><strong>Seats Available:</strong> {$seats_available}</p>
+                    <p><strong>Price per Seat:</strong> ₹{$price_per_seat}</p>
+                </div>
+                <a href='user2.html'>
+                    <button onclick=\"bookNow('$car_model', '$driver_name', '$car_reg_no', $seats_available, $price_per_seat, { lat: $latitude, lng: $longitude })\">Book Now</button>
+                </a>
+            </div>";
+        }
+    } else {
+        echo 'No data found in the table.';
+    }
+    
+    // Close connection
+    $conn->close();
+    ?>
+
+      
     </div>
 
     <!-- Right Side - Map -->
