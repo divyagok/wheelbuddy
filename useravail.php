@@ -1,6 +1,5 @@
-<?php
-include('api/config.php');
-?>
+<?php include 'api/config.php'; ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -181,49 +180,62 @@ include('api/config.php');
     <!-- Left Side - Driver Details -->
     <div class="drivers-container">
     <?php
-    $query = "SELECT * FROM driver_db WHERE driver_id !='no data' AND ride_status='Not Started'";
-
+    // First query to get driver details
+    $query = "SELECT * FROM driver_db WHERE driver_id != 'no data' AND ride_status = 'Not Started'";
+    
     // Execute Query
     $result = $conn->query($query);
-    
+
     // Check if the query execution failed
     if (!$result) {
         die("Query Error: " . $conn->error);  // This will show the actual MySQL error
     }
-    
+
     // Check if rows exist
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            // Fetch dynamic data
-            $driver_name = htmlspecialchars($row['driver_name']);
-             $car_model = htmlspecialchars($row['car_name']);
-             $car_reg_no = htmlspecialchars($row['car_reg_no']);
-             $seats_available = (int) $row['available_seats'];
-             $price_per_seat = (int) $row['price_per_seat'];
-             $latitude = (float) $row['pickup_latitude'];  // Ensure these values exist in your DB
-             $longitude = (float) $row['pickup_longitude'];
+            // Fetch driver details
+            $driver_id = htmlspecialchars($row['driver_id']);
+            $car_model = htmlspecialchars($row['car_name']);
+            $car_reg_no = htmlspecialchars($row['car_reg_no']);
+            $seats_available = (int) $row['available_seats'];
+            $price_per_seat = 10;
+            $latitude =  $row['pickup_latitude'];
+            $longitude =  $row['pickup_longitude'];
+
+            // Second query to fetch user details based on driver_id
+            $user_query = "SELECT * FROM userdetails WHERE id = '$driver_id'";
+            $user_result = $conn->query($user_query);
+            
+            // Default values if user is not found
+            $driver_Name = "Unknown";
     
+            if ($user_result && $user_result->num_rows > 0) {
+                $user_row = $user_result->fetch_assoc();
+                $driver_Name = htmlspecialchars($user_row['User_Name']);
+            }
+
             echo "<div class='driver-card'>
                 <img src='./car1.jpg' alt='Car' />
                 <div class='driver-details'>
                     <h4>{$car_model}</h4>
-                    <p><strong>Driver:</strong> {$driver_name}</p>
+                    <p><strong>Driver:</strong> {$driver_Name}</p>
                     <p><strong>Car Reg No:</strong> {$car_reg_no}</p>
                     <p><strong>Seats Available:</strong> {$seats_available}</p>
-                    <p><strong>Price per Seat:</strong> ₹{$price_per_seat}</p>
                 </div>
-                <a href='user2.html'>
-                    <button onclick=\"bookNow('$car_model', '$driver_name', '$car_reg_no', $seats_available, $price_per_seat, { lat: $latitude, lng: $longitude })\">Book Now</button>
-                </a>
+          
+                <button onclick=\"bookNow('$car_model', '$driver_Name', '$car_reg_no', $seats_available, { lat: $latitude, lng: $longitude })\"> Book Now </button>
+             
             </div>";
         }
     } else {
         echo 'No data found in the table.';
     }
-    
+
     // Close connection
     $conn->close();
-    ?>
+?>
+
 
       
     </div>
@@ -244,41 +256,48 @@ include('api/config.php');
       });
     }
 
-    function bookNow(carName, driverName, carRegNo, seatsAvailable, pricePerSeat, carLocation) {
-  // Add marker for selected car
-  new google.maps.Marker({
-    position: carLocation,
-    map: map,
-    title: carName,
-  });
+    async function bookNow(carModel, driverName, carRegNo, seatsAvailable, carLocation) {
+      try {
+        const data = {
+          car_name: carModel,
+          driver_name: driverName,
+          car_reg_no: carRegNo,
+          available_seats: seatsAvailable,
+          liveLocation: carLocation
+        };
 
-  // Data to send to the backend
-  const bookingDetails = {
-    driver_name: driverName,
-    car_name: carName,
-    car_reg_no: carRegNo,
-    available_seats: seatsAvailable,
-    price_per_seat: pricePerSeat,
-    liveLocation: carLocation,  // Directly pass the location object here
-  };
+        console.log("Sending booking data:", data);
 
-  // Send data to backend via AJAX
-  $.ajax({
-    url: 'api/booknow.php', // Replace with your backend PHP file
-    type: 'POST',
-    data: JSON.stringify(bookingDetails), // Send data as JSON
-    contentType: 'application/json', // Set the content type to JSON
-    success: function(response) {
-      console.log("Server Response: ", response);
-      alert(`You have successfully booked a seat in ${carName}`);
-    },
-    error: function(xhr, status, error) {
-      console.error("Error: ", status, error);
-      alert("There was an error with your booking.");
+        const response = await fetch('api/booknow.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log("Booking response:", result);
+
+        if (result.status === 'success') {
+          alert('Booking successful!\n\n' + 
+                'Driver: ' + result.booking_details.driver + '\n' +
+                'Car: ' + result.booking_details.car + '\n' +
+                'Pickup: ' + result.booking_details.pickup + '\n' +
+                'Drop: ' + result.booking_details.drop);
+          window.location.href = 'user2.html';
+        } else {
+          alert('Booking failed: ' + result.message);
+        }
+      } catch (error) {
+        console.error('Error during booking:', error);
+        alert('Error during booking. Please try again.');
+      }
     }
-  });
-}
-
 
     // Initialize map on page load
     window.onload = initMap;

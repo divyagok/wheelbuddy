@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -162,23 +161,61 @@
     </div>
   </div>
 
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDquoADXRiPz-PHZ61ZgOsc0EUkAymp9rw&libraries=places"
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDquoADXRiPz-PHZ61ZgOsc0EUkAymp9rw&libraries=places,directions,distanceMatrix"
     defer></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
   <script>
-
-
     let map;
     let liveMarker;
     let userLocation = { lat: 20.5937, lng: 78.9629 }; // Default location (India)
     let autocompletePickup, autocompleteDrop;
+    let directionsService;
+    let distanceMatrixService;
 
     function initMap() {
-      // Initialize the map
+      // Initialize services
       map = new google.maps.Map(document.getElementById("map"), {
         center: userLocation,
         zoom: 6,
+      });
+      directionsService = new google.maps.DirectionsService();
+      distanceMatrixService = new google.maps.DistanceMatrixService();
+
+      // Initialize autocomplete for pickup and drop locations
+      autocompletePickup = new google.maps.places.Autocomplete(
+        document.getElementById("pickup-location"),
+        { types: ['geocode'] }
+      );
+
+      autocompleteDrop = new google.maps.places.Autocomplete(
+        document.getElementById("drop-location"),
+        { types: ['geocode'] }
+      );
+
+      // Add listeners for place changes
+      autocompletePickup.addListener('place_changed', function() {
+        const place = autocompletePickup.getPlace();
+        if (place.geometry) {
+          map.setCenter(place.geometry.location);
+          map.setZoom(15);
+          new google.maps.Marker({
+            position: place.geometry.location,
+            map: map,
+            title: "Pickup Location"
+          });
+        }
+      });
+
+      autocompleteDrop.addListener('place_changed', function() {
+        const place = autocompleteDrop.getPlace();
+        if (place.geometry) {
+          new google.maps.Marker({
+            position: place.geometry.location,
+            map: map,
+            title: "Drop Location"
+          });
+        }
       });
 
       // Fetch user's live location
@@ -204,72 +241,103 @@
           }
         );
       }
-
-      // Add autocomplete for pickup and drop locations
-      const pickupInput = document.getElementById("pickup-location");
-      autocompletePickup = new google.maps.places.Autocomplete(pickupInput);
-
-      const dropInput = document.getElementById("drop-location");
-      autocompleteDrop = new google.maps.places.Autocomplete(dropInput);
     }
 
-
-    
-
-    // function findRide() {
-    //   const pickupLocation = document.getElementById("pickup-location").value;
-    //   const dropLocation = document.getElementById("drop-location").value;
-
-    //   if (!pickupLocation || !dropLocation) {
-    //     alert("Please enter both pickup and drop locations!");
-    //     return;
-    //   }
-
-    //   console.log("Searching for rides...", { pickupLocation, dropLocation });
-    //   alert("Searching for rides...");
-    // }
-
-    function saveDetails() {
-      const pickupLocation = document.getElementById("pickup-location").value;
-      const dropLocation = document.getElementById("drop-location").value;
-      const availableSeats = document.getElementById("seats-required").value;
-
-      if (!pickupLocation || !dropLocation || !availableSeats) {
-        alert("Please fill in all the fields.");
-        return;
-      }
-
-      const data = {
-        liveLocation: userLocation,
-        pickupLocation,
-        dropLocation,
-        availableSeats,
-      };
-
-      // AJAX POST request
-      fetch("api/saveride2.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
+    function calculateDistance(origin, destination) {
+      return new Promise((resolve, reject) => {
+        distanceMatrixService.getDistanceMatrix(
+          {
+            origins: [origin],
+            destinations: [destination],
+            travelMode: google.maps.TravelMode.DRIVING,
+            unitSystem: google.maps.UnitSystem.METRIC
+          },
+          (response, status) => {
+            if (status === 'OK' && response.rows[0].elements[0].status === 'OK') {
+              resolve({
+                text: response.rows[0].elements[0].distance.text,
+                value: response.rows[0].elements[0].distance.value
+              });
+            } else {
+              reject('Error calculating distance: ' + status);
+            }
           }
-          return response.json();
-        })
-        .then((result) => {
-  // alert("Ride details saved successfully!");
-  console.log(result);
-  // Redirect to the next page
-  window.location.href = "loading.html"; // Replace "next_page.html" with the URL of the next page
-})
-        .catch((error) => {
-          alert("Error saving ride details.");
-          console.error(error);
+        );
+      });
+    }
+
+    async function saveDetails() {
+      try {
+        const pickupLocation = document.getElementById("pickup-location").value;
+        const dropLocation = document.getElementById("drop-location").value;
+        const seats = document.getElementById("seats-required").value;
+
+        if (!pickupLocation || !dropLocation || !seats) {
+          alert("Please fill in all the details.");
+          return;
+        }
+
+        // Get coordinates from the Places API
+        const pickupPlace = autocompletePickup.getPlace();
+        const dropPlace = autocompleteDrop.getPlace();
+
+        if (!pickupPlace || !pickupPlace.geometry || !dropPlace || !dropPlace.geometry) {
+          alert("Please select locations from the suggestions.");
+          return;
+        }
+
+        // Calculate distance
+        const distance = await calculateDistance(
+          pickupPlace.geometry.location,
+          dropPlace.geometry.location
+        );
+
+        console.log("Distance calculated:", distance); // Debug log
+        alert("Details saved successfully!");
+        const data = {
+          liveLocation: userLocation,
+          pickupLocation: {
+            address: pickupLocation,
+            lat: pickupPlace.geometry.location.lat(),
+            lng: pickupPlace.geometry.location.lng()
+          },
+          dropLocation: {
+            address: dropLocation,
+            lat: dropPlace.geometry.location.lat(),
+            lng: dropPlace.geometry.location.lng()
+          },
+          distance: distance,
+          availableSeats: seats
+        };
+
+        console.log("Sending data:", data); // Debug log
+
+        // Send data to saveride2.php
+        const response = await fetch("api/saveride2.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log("Server response:", result); // Debug log
+
+        if (result.status === 'success') {
+          console.log("Redirecting to useravail.php");
+          window.location.href = "useravail.php";
+        } else {
+          alert(result.message || "Error saving ride details.");
+        }
+      } catch (error) {
+        console.error("Error details:", error); // Debug log
+        alert("Error: " + (error.message || "Error calculating distance or saving ride details"));
+      }
     }
 
     window.onload = initMap;
@@ -277,5 +345,3 @@
 </body>
 
 </html>
-
-

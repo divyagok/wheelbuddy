@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } else {
         // Invalid credentials, show an error message
-        echo "<script type='text/javascript'>alert('Invalid Username or Password');window.location.href='login.html';</script>";
+        echo "<script type='text/javascript'>alert('Invalid Username or Password');window.location.href='../login.html';</script>";
     }
 
     // Close the database connection

@@ -226,6 +226,8 @@ defer
       let liveMarker;
       let userLocation = { lat: 20.5937, lng: 78.9629 }; // Default location (India)
       let autocompletePickup, autocompleteDrop;
+      let pickupMarker = null, dropMarker = null; // Markers for pickup & drop
+      let directionsService, directionsRenderer; // Route service
     
       function initMap() {
         // Initialize the map
@@ -233,6 +235,10 @@ defer
           center: userLocation,
           zoom: 6,
         });
+    
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer();
+        directionsRenderer.setMap(map);
     
         // Fetch user's live location
         if (navigator.geolocation) {
@@ -264,7 +270,72 @@ defer
     
         const dropInput = document.getElementById("drop-location");
         autocompleteDrop = new google.maps.places.Autocomplete(dropInput);
+    
+        // Handle pickup location selection
+        autocompletePickup.addListener("place_changed", function () {
+          let place = autocompletePickup.getPlace();
+          if (!place.geometry) return;
+    
+          // Remove previous marker if exists
+          if (pickupMarker) pickupMarker.setMap(null);
+    
+          // Add Green Marker for Pickup 🟢
+          pickupMarker = new google.maps.Marker({
+            position: place.geometry.location,
+            map: map,
+            icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+            title: "Pickup Location",
+          });
+    
+          map.setCenter(place.geometry.location);
+          map.setZoom(14);
+    
+          // If both markers exist, draw route
+          if (pickupMarker && dropMarker) drawRoute();
+        });
+    
+        // Handle drop location selection
+        autocompleteDrop.addListener("place_changed", function () {
+          let place = autocompleteDrop.getPlace();
+          if (!place.geometry) return;
+    
+          // Remove previous marker if exists
+          if (dropMarker) dropMarker.setMap(null);
+    
+          // Add Red Marker for Drop 🔴
+          dropMarker = new google.maps.Marker({
+            position: place.geometry.location,
+            map: map,
+            icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+            title: "Drop Location",
+          });
+    
+          map.setCenter(place.geometry.location);
+          map.setZoom(14);
+    
+          // If both markers exist, draw route
+          if (pickupMarker && dropMarker) drawRoute();
+        });
       }
+    
+      function drawRoute() {
+        if (!pickupMarker || !dropMarker) return;
+    
+        const request = {
+          origin: pickupMarker.getPosition(),
+          destination: dropMarker.getPosition(),
+          travelMode: google.maps.TravelMode.DRIVING,
+        };
+    
+        directionsService.route(request, function (result, status) {
+          if (status === google.maps.DirectionsStatus.OK) {
+            directionsRenderer.setDirections(result);
+          } else {
+            alert("Could not fetch route. Try again.");
+          }
+        });
+      }
+    
     
       function saveDetails() {
         const pickupLocation = document.getElementById("pickup-location").value;
@@ -306,7 +377,7 @@ defer
           .then((result) => {
             alert("Ride details saved successfully!");
             console.log(result);
-            window.location.href = "demo.html";
+            window.location.href = "demo.php";
           })
           .catch((error) => {
             alert("Error saving ride details.");

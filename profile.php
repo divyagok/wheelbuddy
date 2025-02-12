@@ -1,25 +1,78 @@
+<?php
+session_start(); // Start the session
+
+// Check if the user is logged in
+if (!isset($_SESSION["id"])) {
+    echo "Please log in first.";
+    exit;
+}
+
+// Database connection settings
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "wheelbuddy"; // Replace with your database name
+
+// Create a connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check the connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch user data based on session user_id
+$user_id = $_SESSION["id"];
+$sql = "SELECT User_Name, Email, Phone_number FROM userdetails WHERE id = ?";
+
+// Prepare the query
+$stmt = $conn->prepare($sql);
+
+// Error checking for prepare() failure
+if ($stmt === false) {
+    die('MySQL prepare error: ' . $conn->error);
+}
+
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Check if user exists
+if ($result->num_rows > 0) {
+    $user = $result->fetch_assoc();
+} else {
+    echo "User not found.";
+    exit;
+}
+
+// Close the database connection
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile - Wheel Buddy</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind CSS (Ensure it's installed properly in production as mentioned) -->
+  <link href="styles.css" rel="stylesheet"> <!-- Link to your built CSS -->
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <style>
+    /* Custom Styles */
     body {
       background-image: url('./blurred_image.png');
       background-size: cover;
       background-position: center;
+      min-height: 100vh;
       color: #333;
       padding-top: 90px;
-    }
-
+}
     .header {
       background-color: #032d5a;
       padding: 15px 20px;
@@ -31,10 +84,6 @@
       width: 100%;
       top: 0;
       z-index: 1000;
-    }
-
-    .header img {
-      height: 50px;
     }
 
     .profile-container {
@@ -88,48 +137,6 @@
       background-color: #0262a1;
     }
 
-    .ride-history {
-      margin-top: 20px;
-      text-align: left;
-    }
-
-    .ride-history button {
-      background-color: #0262a1;
-      color: white;
-      width: 100%;
-      border: none;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 1rem;
-      text-align: left;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .ride-history button i {
-      transition: transform 0.3s ease;
-    }
-
-    .ride-history button.active i {
-      transform: rotate(180deg);
-    }
-
-    .ride-list {
-      display: none;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 8px;
-      padding: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      margin-top: 5px;
-    }
-
-    .ride-list p {
-      margin: 5px 0;
-      font-size: 0.9rem;
-      color: #555;
-    }
   </style>
 </head>
 
@@ -148,7 +155,7 @@
         <ul class="dropdown-menu dropdown-menu-end">
           <li><a class="dropdown-item" href="#">Settings</a></li>
           <li><hr class="dropdown-divider" /></li>
-          <li><a class="dropdown-item" href="#">Logout</a></li>
+          <li><a class="dropdown-item" href="login.html">Logout</a></li>
         </ul>
       </div>
     </div>
@@ -158,59 +165,34 @@
   <div class="profile-container">
     <h2>User Profile</h2>
     <div class="profile-details">
-      <p><strong>Name:</strong> John Doe</p>
-      <p><strong>Email:</strong> johndoe@example.com</p>
-      <p><strong>Phone:</strong> +91 98765 43210</p>
-      <p><strong>Membership Plan:</strong> Gold Plan - ₹199/month</p>
+      <p><strong>Name:</strong> <?php echo htmlspecialchars($user['User_Name']); ?></p>
+      <p><strong>Email:</strong> <?php echo htmlspecialchars($user['Email']); ?></p>
+      <p><strong>Phone:</strong> <?php echo htmlspecialchars($user['Phone_number']); ?></p>
+
+       
+      </p>
     </div>
 
     <div class="action-buttons">
       <button onclick="editProfile()">Edit Profile</button>
       <button onclick="changePassword()">Change Password</button>
     </div>
-
-    <!-- Ride History (Collapsible) -->
-    <div class="ride-history">
-      <button onclick="toggleRideHistory()">Ride History <i class="fas fa-chevron-down"></i></button>
-      <div class="ride-list">
-        <p><strong>Ride 1:</strong> Pickup: City Center → Drop: Airport</p>
-        <p><strong>Fare:</strong> ₹350 | <strong>Date:</strong> 10th Jan 2024</p>
-        <hr>
-        <p><strong>Ride 2:</strong> Pickup: Railway Station → Drop: Mall</p>
-        <p><strong>Fare:</strong> ₹150 | <strong>Date:</strong> 5th Jan 2024</p>
-        <hr>
-        <p><strong>Ride 3:</strong> Pickup: Office → Drop: Home</p>
-        <p><strong>Fare:</strong> ₹220 | <strong>Date:</strong> 1st Jan 2024</p>
-      </div>
-    </div>
   </div>
 
   <script>
-    function toggleRideHistory() {
-      const rideList = document.querySelector('.ride-list');
-      const button = document.querySelector('.ride-history button');
-
-      if (rideList.style.display === "none" || rideList.style.display === "") {
-        rideList.style.display = "block";
-        button.classList.add("active");
-      } else {
-        rideList.style.display = "none";
-        button.classList.remove("active");
-      }
-    }
-
     function editProfile() {
       alert("Redirecting to Edit Profile Page...");
-      window.location.href = "updatephoto.html"; // Change this URL accordingly
+      window.location.href = "updateprofile.php";
     }
 
     function changePassword() {
       alert("Redirecting to Change Password Page...");
-      window.location.href = "change-password.html"; // Change this URL accordingly
+      window.location.href = "change-password.html";
     }
   </script>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

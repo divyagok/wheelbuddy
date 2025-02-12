@@ -1,3 +1,6 @@
+<?php
+include('api/config.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -114,7 +117,7 @@
       }
     </style>
   </head>
-  <body>
+  <body> 
     <!-- Header -->
     <div class="header">
       <div class="d-flex align-items-center">
@@ -145,22 +148,59 @@
       <!-- Ride Requests -->
       <div class="input-box">
         <h2 class="text-dark">Ride Requests</h2>
-        <div class="request-card">
-          <div>
-            <p><strong>Name:</strong> John Doe</p>
-            <p><strong>Pickup:</strong> Tambaram, Chennai</p>
-            <p><strong>Drop-off:</strong> Central Station, Chennai</p>
-          </div>
-          <button onclick="acceptRequest('Tambaram, Chennai', 'Central Station, Chennai')">Accept</button>
-        </div>
-        <div class="request-card">
-          <div>
-            <p><strong>Name:</strong> Jane Smith</p>
-            <p><strong>Pickup:</strong> chrompet,Chennai</p>
-            <p><strong>Drop-off:</strong>tambaramr,Chennai</p>
-          </div>
-          <button onclick="acceptRequest('chrompet,Chennai', 'tambaramr,Chennai')">Accept</button>
-        </div>
+        <?php
+ 
+            $query = "SELECT 
+                        driver_db.pickup_location, 
+                        driver_db.drop_location,
+                        driver_db.available_seats, 
+                        driver_db.pickup_latitude, 
+                        driver_db.pickup_longitude,
+                        userdetails.User_Name, 
+                        userdetails.Phone_number 
+                      FROM driver_db 
+                      INNER JOIN userdetails ON driver_db.user_id = userdetails.id 
+                      WHERE driver_db.user_id != 'no data' 
+                      AND driver_db.ride_status='Not Started'";
+
+            $result = $conn->query($query);
+
+            // Check if the query execution failed
+            if (!$result) {
+                die("Query Error: " . $conn->error);
+            }
+
+            // Check if rows exist
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    // Fetch dynamic data
+                  
+                    $seats_available = (int) $row['available_seats'];
+                    $pickup = $row['pickup_location'];
+                    $drop = $row['drop_location'];
+                    $latitude =  $row['pickup_latitude'];
+                    $longitude = $row['pickup_longitude'];
+                    $username = htmlspecialchars($row['User_Name']);
+                    $phone_number = htmlspecialchars($row['Phone_number']);
+
+                    echo "<div class='request-card'>
+                      <div>
+                        <p><strong>Name:</strong> {$username}</p>
+                        <p><strong>Pickup:</strong> {$pickup}</p>
+                        <p><strong>Drop-off:</strong> {$drop}</p>
+                        <p><strong>Contact:</strong> {$phone_number}</p>
+                        <p><strong>Seats:</strong> {$seats_available}</p>
+                      </div>
+                                <button onclick=\"bookNow('$phone_number', '$drop', '$pickup', $seats_available, $username, { lat: $latitude, lng: $longitude })\">Accept</button>
+                    </div>";
+                }
+            } else {
+                echo 'No data found in the table.';
+            }
+
+            // Close connection
+            $conn->close();
+        ?>
       </div>
 
       <!-- Map -->
@@ -207,9 +247,9 @@
       });
 
       // Redirect to the next page after setting the marker
-      setTimeout(() => {
-        window.location.href = "welcome.html"; // Replace with your actual page URL
-      }, 2000); // Redirect after 2 seconds (optional delay)
+      // setTimeout(() => {
+      //   window.location.href = "welcome.html"; // Replace with your actual page URL
+      // }, 2000); // Redirect after 2 seconds (optional delay)
       
     } else {
       console.error(`Geocode failed for ${address}: ${status}`);
