@@ -188,7 +188,7 @@
 
     // Check if the query execution failed
     if (!$result) {
-        die("Query Error: " . $conn->error);  // This will show the actual MySQL error
+        die("Query Error: " . $conn->error);  // This will show the actual MySQL error 
     }
 
     // Check if rows exist
@@ -284,12 +284,8 @@
         console.log("Booking response:", result);
 
         if (result.status === 'success') {
-          alert('Booking successful!\n\n' + 
-                'Driver: ' + result.booking_details.driver + '\n' +
-                'Car: ' + result.booking_details.car + '\n' +
-                'Pickup: ' + result.booking_details.pickup + '\n' +
-                'Drop: ' + result.booking_details.drop);
-          window.location.href = 'user2.html';
+        
+          window.location.href = 'waiting.php';
         } else {
           alert('Booking failed: ' + result.message);
         }

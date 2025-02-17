@@ -1,6 +1,21 @@
 <?php
 include('api/config.php');
+
+// Fetch details of the driver with ID from session
+$driver_id = $_SESSION["id"];
+
+$result = $conn->query("SELECT * FROM driver_db WHERE driver_id = $driver_id AND ride_status='Not Started' ORDER BY driver_id DESC LIMIT 1");
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc(); 
+
+    $car_reg_no = $row["car_reg_no"]; 
+
+} else {
+    echo "No driver found.";
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -118,6 +133,8 @@ include('api/config.php');
     </style>
   </head>
   <body> 
+
+
     <!-- Header -->
     <div class="header">
       <div class="d-flex align-items-center">
@@ -141,7 +158,11 @@ include('api/config.php');
           </ul>
         </div>
       </div>
+
+
     </div>
+
+
 
     <!-- Main Content -->
     <div class="main-container">
@@ -156,11 +177,14 @@ include('api/config.php');
                         driver_db.available_seats, 
                         driver_db.pickup_latitude, 
                         driver_db.pickup_longitude,
+                        driver_db.ride_id,
                         userdetails.User_Name, 
-                        userdetails.Phone_number 
+                        userdetails.Phone_number,
+                        driver_db.user_id
                       FROM driver_db 
                       INNER JOIN userdetails ON driver_db.user_id = userdetails.id 
                       WHERE driver_db.user_id != 'no data' 
+                      AND driver_db.car_reg_no = '$car_reg_no' 
                       AND driver_db.ride_status='Not Started'";
 
             $result = $conn->query($query);
@@ -178,10 +202,14 @@ include('api/config.php');
                     $seats_available = (int) $row['available_seats'];
                     $pickup = $row['pickup_location'];
                     $drop = $row['drop_location'];
-                    $latitude =  $row['pickup_latitude'];
-                    $longitude = $row['pickup_longitude'];
+                    $userlatitude =  $row['pickup_latitude'];
+                    $userlongitude = $row['pickup_longitude'];
+                    $userid = $row['user_id'];
                     $username = htmlspecialchars($row['User_Name']);
                     $phone_number = htmlspecialchars($row['Phone_number']);
+                    $rideid = $row['ride_id'];
+
+                    $ride_status = "Accepted";
 
                     echo "<div class='request-card'>
                       <div>
@@ -191,8 +219,10 @@ include('api/config.php');
                         <p><strong>Contact:</strong> {$phone_number}</p>
                         <p><strong>Seats:</strong> {$seats_available}</p>
                       </div>
-                                <button onclick=\"bookNow('$phone_number', '$drop', '$pickup', $seats_available, $username, { lat: $latitude, lng: $longitude })\">Accept</button>
-                    </div>";
+      
+                      <button onclick='showLiveTracking(\"{$phone_number}\", \"{$drop}\", \"{$pickup}\", \"{$username}\", {$userlatitude}, {$userlongitude}, {$userid}, {$rideid})'>Accept</button>
+
+                      </div>";
                 }
             } else {
                 echo 'No data found in the table.';
@@ -202,6 +232,7 @@ include('api/config.php');
             $conn->close();
         ?>
       </div>
+
 
       <!-- Map -->
       <div class="map-container">
@@ -215,7 +246,7 @@ include('api/config.php');
       let map;
       let geocoder;
 
-      const usersPickupLocations = [
+      const usersPickupLocations = [ 
         { name: "John Doe", pickup: "Tambaram, Chennai" },
         { name: "Jane Smith", pickup: "Indira Nagar, Bangalore" },
       ];
@@ -235,33 +266,35 @@ include('api/config.php');
       }
 
       function geocodeAndMark(address, name) {
-  geocoder.geocode({ address: address }, (results, status) => {
-    if (status === "OK") {
-      const location = results[0].geometry.location;
+        geocoder.geocode({ address: address }, (results, status) => {
+          if (status === "OK") {
+            const location = results[0].geometry.location;
 
-      new google.maps.Marker({
-        position: location,
-        map: map,
-        title: `${name}'s Pickup Location: ${address}`,
-        icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-      });
+            new google.maps.Marker({
+              position: location,
+              map: map,
+              title: `${name}'s Pickup Location: ${address}`,
+              icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+            });
 
-      // Redirect to the next page after setting the marker
-      // setTimeout(() => {
-      //   window.location.href = "welcome.html"; // Replace with your actual page URL
-      // }, 2000); // Redirect after 2 seconds (optional delay)
-      
-    } else {
-      console.error(`Geocode failed for ${address}: ${status}`);
-    }
-  });
-}
+        
+            
+          } else {
+            console.error(`Geocode failed for ${address}: ${status}`);
+          }
+        });
+      }
 
       function acceptRequest(pickup, drop) {
         alert(`Accepted ride request from ${pickup} to ${drop}`);
       }
 
       window.onload = initMap;
+
+      // Replace the bookNow function with this:
+      function showLiveTracking(phone, drop, pickup, username, lat, lng,userid, rideid) {
+        window.location.href = `welcome.php?phone=${encodeURIComponent(phone)}&pickup=${encodeURIComponent(pickup)}&drop=${encodeURIComponent(drop)}&username=${encodeURIComponent(username)}&lat=${lat}&lng=${lng}&user_id=${userid}&rideid=${rideid}`;
+      }
     </script>
   </body>
 </html>

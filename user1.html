@@ -172,6 +172,8 @@
     let autocompletePickup, autocompleteDrop;
     let directionsService;
     let distanceMatrixService;
+    let pickupPlace = null;
+    let dropPlace = null;
 
     function initMap() {
       // Initialize services
@@ -197,6 +199,7 @@
       autocompletePickup.addListener('place_changed', function() {
         const place = autocompletePickup.getPlace();
         if (place.geometry) {
+          pickupPlace = place;
           map.setCenter(place.geometry.location);
           map.setZoom(15);
           new google.maps.Marker({
@@ -210,6 +213,9 @@
       autocompleteDrop.addListener('place_changed', function() {
         const place = autocompleteDrop.getPlace();
         if (place.geometry) {
+          dropPlace = place;
+          map.setCenter(place.geometry.location);
+          map.setZoom(15);
           new google.maps.Marker({
             position: place.geometry.location,
             map: map,
@@ -277,10 +283,6 @@
           return;
         }
 
-        // Get coordinates from the Places API
-        const pickupPlace = autocompletePickup.getPlace();
-        const dropPlace = autocompleteDrop.getPlace();
-
         if (!pickupPlace || !pickupPlace.geometry || !dropPlace || !dropPlace.geometry) {
           alert("Please select locations from the suggestions.");
           return;
@@ -292,8 +294,6 @@
           dropPlace.geometry.location
         );
 
-        console.log("Distance calculated:", distance); // Debug log
-        alert("Details saved successfully!");
         const data = {
           liveLocation: userLocation,
           pickupLocation: {

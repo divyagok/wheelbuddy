@@ -30,7 +30,7 @@ try {
     $pickup_lng = isset($_SESSION['pickup_location']['lng']) ? $_SESSION['pickup_location']['lng'] : 0;
     $drop_location = isset($_SESSION['drop_location']['address']) ? $_SESSION['drop_location']['address'] : '';
 
-    // Basic SQL query with essential fields
+    // Insert query
     $sql = "INSERT INTO driver_db (
         user_id,
         driver_name,
@@ -68,10 +68,17 @@ try {
         throw new Exception("Execute failed: " . $stmt->error);
     }
 
+    // Get the last inserted ID
+    $user_ride_id = $conn->insert_id;
+    $_SESSION['user_ride_id'] = $user_ride_id; // Store in session
+
+    error_log("User ride ID stored in session: " . $_SESSION['user_ride_id']);
+
     // Return success response
     echo json_encode([
         'status' => 'success',
         'message' => 'Booking saved successfully!',
+        'booking_id' => $user_ride_id,  // Return the inserted ID in response
         'booking_details' => [
             'pickup' => $pickup_location,
             'drop' => $drop_location,
@@ -94,3 +101,4 @@ if (isset($stmt)) {
     $stmt->close();
 }
 $conn->close();
+?>

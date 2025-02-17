@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ride in Progress - Wheel Buddy</title>
   <!-- Tailwind CSS -->
@@ -12,147 +12,168 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDquoADXRiPz-PHZ61ZgOsc0EUkAymp9rw&libraries=places" defer></script>
-  
+
   <style>
-      body {
-        background-image: url('./blurred_image.png');
-        background-size: cover;
-        background-position: center;
-        color: #333;
-        padding-top: 90px;
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        margin: 0;
-        overflow: hidden;
-      }
+    body {
+      background-image: url('./blurred_image.png');
+      background-size: cover;
+      background-position: center;
+      color: #333;
+      padding-top: 70px;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-      .header {
-        background-color: #032d5a;
-        padding: 15px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: #f0f0f0;
-        position: fixed;
-        width: 100%;
-        top: 0;
-        z-index: 1000;
-      }
+    .header {
+      background-color: #032d5a;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #f0f0f0;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
 
-      .main-container {
-        display: flex;
-        flex-direction: row;
-        height: 100%;
-      }
+    .main-container {
+      display: flex;
+      height: 100%;
+      padding: 10px;
+    }
 
-      .map-container {
-        flex-grow: 1;
-        height: 100%;
-        border-radius: 15px;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-        border: 3px solid #032d5a;
-        position: relative;
-      }
+    .map-container {
+      flex-grow: 1;
+      height: 100%;
+      border-radius: 10px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+      border: 3px solid #032d5a;
+      position: relative;
+    }
 
-      #map {
-        width: 100%;
-        height: 100%;
-        border-radius: 15px;
-      }
+    #map {
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+    }
 
-      .ride-details-container {
-        width: 300px;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 15px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        margin-right: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
+    /* 🚗 Ride Details Box */
+    .ride-details-container {
+      width: 260px;
+      height: fit-content;
+      background: rgba(255, 255, 255, 0.98);
+      border: 2px solid #032d5a;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      padding: 12px;
+      margin: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-      .ride-details-container img {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        margin-bottom: 10px;
-      }
+    .driver-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      border-bottom: 2px solid #032d5a;
+      padding-bottom: 5px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
 
-      .ride-details p {
-        margin: 2px 0;
-        font-size: 0.85rem;
-        color: #555;
-      }
+    .driver-info img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #032d5a;
+    }
 
-      .ride-actions button {
-        margin-top: 10px;
-        padding: 10px;
-        border-radius: 5px;
-        font-size: 1rem;
-        width: 100%;
-        background-color: #032d5a;
-        color: white;
-        border: none;
-        cursor: pointer;
-      }
+    .driver-info h6 {
+      font-size: 1rem;
+      margin: 0;
+      color: #032d5a;
+      font-weight: bold;
+    }
 
-      .ride-actions button.pay-now {
-        background-color: green;
-      }
+    .ride-details p {
+      font-size: 0.85rem;
+      margin: 3px 0;
+      color: #333;
+      text-align: center;
+    }
 
-      /* Chat Box */
-      .chat-box {
-        position: fixed;
-        bottom: 100px;
-        right: 20px;
-        width: 250px;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        display: none;
-        flex-direction: column;
-      }
+    .ride-actions button {
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 1rem;
+      width: 100%;
+      background-color: #032d5a;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
 
-      .chat-header {
-        background-color: #032d5a;
-        color: white;
-        padding: 8px;
-        text-align: center;
-        font-weight: bold;
-        border-radius: 10px 10px 0 0;
-      }
+    .ride-actions button.pay-now {
+      background-color: green;
+    }
 
-      .chat-body {
-        padding: 10px;
-        height: 150px;
-        overflow-y: auto;
-        font-size: 0.85rem;
-      }
+    /* Chat Box */
+    .chat-box {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 260px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      display: none;
+      flex-direction: column;
+    }
 
-      .chat-footer {
-        display: flex;
-        padding: 5px;
-        border-top: 1px solid #ddd;
-      }
+    .chat-header {
+      background-color: #032d5a;
+      color: white;
+      padding: 8px;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 10px 10px 0 0;
+    }
 
-      .chat-footer input {
-        flex-grow: 1;
-        padding: 5px;
-        font-size: 0.85rem;
-        border: none;
-        outline: none;
-      }
+    .chat-body {
+      padding: 10px;
+      height: 150px;
+      overflow-y: auto;
+      font-size: 0.85rem;
+    }
 
-      .chat-footer button {
-        background-color: #032d5a;
-        color: white;
-        border: none;
-        padding: 5px;
-        cursor: pointer;
-      }
+    .chat-footer {
+      display: flex;
+      padding: 5px;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-footer input {
+      flex-grow: 1;
+      padding: 5px;
+      font-size: 0.85rem;
+      border: none;
+      outline: none;
+    }
+
+    .chat-footer button {
+      background-color: #032d5a;
+      color: white;
+      border: none;
+      padding: 5px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -163,26 +184,20 @@
     </div>
     <div class="d-flex align-items-center">
       <img alt="Wheel Buddy logo" src="./wb.png" width="100" />
-      <div class="dropdown ms-3">
-        <i class="fas fa-user-circle text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
-          style="cursor: pointer; font-size: 24px"></i>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="#">Profile</a></li>
-          <li><a class="dropdown-item" href="#">Settings</a></li>
-          <li><hr class="dropdown-divider" /></li>
-          <li><a class="dropdown-item" href="#">Logout</a></li>
-        </ul>
-      </div>
     </div>
   </div>
 
   <div class="main-container">
     <!-- Driver Details Box -->
     <div class="ride-details-container">
-      <img src="./driver.jpg" alt="Driver">
-      <h6>John Doe</h6>
+      <div class="driver-info">
+        <img src="./driver.jpg" alt="Driver">
+        <div>
+          <h6>John Doe</h6>
+          <p style="margin: 0; font-size: 0.9rem; color: #032d5a;">Honda City (Blue)</p>
+        </div>
+      </div>
       <div class="ride-details">
-        <p><strong>Car:</strong> Honda City (Blue)</p>
         <p><strong>Reg No:</strong> TN09AB1234</p>
         <p><strong>ETA:</strong> 10 mins</p>
         <p><strong>Status:</strong> Ride in Progress</p>
@@ -207,7 +222,7 @@
       <button onclick="sendMessage()">Send</button>
     </div>
   </div>
-  
+
   <script>
     let map;
     function initMap() {
@@ -223,45 +238,9 @@
         title: "Driver Location",
         icon: "https://maps.google.com/mapfiles/ms/icons/car.png"
       });
-
-      // Example route for destination
-      const destination = { lat: 20.5937, lng: 78.9809 };
-      const directionsService = new google.maps.DirectionsService();
-      const directionsRenderer = new google.maps.DirectionsRenderer();
-      directionsRenderer.setMap(map);
-
-      const request = {
-        origin: { lat: 20.5947, lng: 78.9645 },
-        destination: destination,
-        travelMode: google.maps.TravelMode.DRIVING,
-      };
-      
-      directionsService.route(request, function(result, status) {
-        if (status === google.maps.DirectionsStatus.OK) {
-          directionsRenderer.setDirections(result);
-        }
-      });
     }
 
     window.onload = initMap;
-
-    function toggleChat() {
-      $("#chatBox").toggle();
-    }
-
-    function sendMessage() {
-      const message = $("#chatMessage").val();
-      if (message.trim() !== "") {
-        $("#chatBody").append(`<div>User: ${message}</div>`);
-        $("#chatMessage").val("");
-      }
-    }
-
-    $(document).on("click", function (event) {
-      if (!$(event.target).closest("#chatBox, .ride-actions button").length) {
-        $("#chatBox").hide();
-      }
-    });
 
     function payNow() {
       alert("Proceed to payment!");

@@ -222,172 +222,103 @@ defer
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script>
-      let map;
-      let liveMarker;
-      let userLocation = { lat: 20.5937, lng: 78.9629 }; // Default location (India)
-      let autocompletePickup, autocompleteDrop;
-      let pickupMarker = null, dropMarker = null; // Markers for pickup & drop
-      let directionsService, directionsRenderer; // Route service
-    
+      let pickupAutocomplete;
+      let dropAutocomplete;
+      let pickupLat, pickupLng, dropLat, dropLng;
+
       function initMap() {
-        // Initialize the map
-        map = new google.maps.Map(document.getElementById("map"), {
-          center: userLocation,
-          zoom: 6,
+        const map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 20.5937, lng: 78.9629 },
+          zoom: 5,
         });
-    
-        directionsService = new google.maps.DirectionsService();
-        directionsRenderer = new google.maps.DirectionsRenderer();
-        directionsRenderer.setMap(map);
-    
-        // Fetch user's live location
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              userLocation = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-              };
-              map.setCenter(userLocation);
-              map.setZoom(14);
-    
-              // Add live location marker
-              liveMarker = new google.maps.Marker({
-                position: userLocation,
-                map: map,
-                title: "Your Live Location",
-              });
-            },
-            () => {
-              alert("Unable to fetch your location.");
-            }
-          );
-        }
-    
-        // Add autocomplete for pickup and drop locations
-        const pickupInput = document.getElementById("pickup-location");
-        autocompletePickup = new google.maps.places.Autocomplete(pickupInput);
-    
-        const dropInput = document.getElementById("drop-location");
-        autocompleteDrop = new google.maps.places.Autocomplete(dropInput);
-    
-        // Handle pickup location selection
-        autocompletePickup.addListener("place_changed", function () {
-          let place = autocompletePickup.getPlace();
-          if (!place.geometry) return;
-    
-          // Remove previous marker if exists
-          if (pickupMarker) pickupMarker.setMap(null);
-    
-          // Add Green Marker for Pickup 🟢
-          pickupMarker = new google.maps.Marker({
-            position: place.geometry.location,
-            map: map,
-            icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
-            title: "Pickup Location",
-          });
-    
-          map.setCenter(place.geometry.location);
-          map.setZoom(14);
-    
-          // If both markers exist, draw route
-          if (pickupMarker && dropMarker) drawRoute();
+
+        // Initialize autocomplete for pickup location
+        pickupAutocomplete = new google.maps.places.Autocomplete(
+          document.getElementById("pickup-location")
+        );
+        pickupAutocomplete.addListener("place_changed", () => {
+          const place = pickupAutocomplete.getPlace();
+          if (place.geometry) {
+            pickupLat = place.geometry.location.lat();
+            pickupLng = place.geometry.location.lng();
+          }
         });
-    
-        // Handle drop location selection
-        autocompleteDrop.addListener("place_changed", function () {
-          let place = autocompleteDrop.getPlace();
-          if (!place.geometry) return;
-    
-          // Remove previous marker if exists
-          if (dropMarker) dropMarker.setMap(null);
-    
-          // Add Red Marker for Drop 🔴
-          dropMarker = new google.maps.Marker({
-            position: place.geometry.location,
-            map: map,
-            icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-            title: "Drop Location",
-          });
-    
-          map.setCenter(place.geometry.location);
-          map.setZoom(14);
-    
-          // If both markers exist, draw route
-          if (pickupMarker && dropMarker) drawRoute();
-        });
-      }
-    
-      function drawRoute() {
-        if (!pickupMarker || !dropMarker) return;
-    
-        const request = {
-          origin: pickupMarker.getPosition(),
-          destination: dropMarker.getPosition(),
-          travelMode: google.maps.TravelMode.DRIVING,
-        };
-    
-        directionsService.route(request, function (result, status) {
-          if (status === google.maps.DirectionsStatus.OK) {
-            directionsRenderer.setDirections(result);
-          } else {
-            alert("Could not fetch route. Try again.");
+
+        // Initialize autocomplete for drop location
+        dropAutocomplete = new google.maps.places.Autocomplete(
+          document.getElementById("drop-location")
+        );
+        dropAutocomplete.addListener("place_changed", () => {
+          const place = dropAutocomplete.getPlace();
+          if (place.geometry) {
+            dropLat = place.geometry.location.lat();
+            dropLng = place.geometry.location.lng();
           }
         });
       }
-    
-    
+
       function saveDetails() {
         const pickupLocation = document.getElementById("pickup-location").value;
         const dropLocation = document.getElementById("drop-location").value;
-        const car_name = document.getElementById("car-name").value;
-        const car_reg_no = document.getElementById("car-reg-no").value;
-        const pickup_time = document.getElementById("pickup-time").value;
+        const carName = document.getElementById("car-name").value;
+        const carRegNo = document.getElementById("car-reg-no").value;
         const availableSeats = document.getElementById("seats-available").value;
-    
-        if (!pickupLocation || !dropLocation || !car_name||!car_reg_no||!pickup_time|| !availableSeats) {
-          alert("Please fill in all the fields.");
+        const pickupTime = document.getElementById("pickup-time").value;
+
+        if (!pickupLocation || !dropLocation || !carName || !carRegNo || !availableSeats || !pickupTime) {
+          alert("Please fill in all the required fields");
           return;
         }
-    
+
         const data = {
-          liveLocation: userLocation,
-          pickupLocation,
-          dropLocation,
-          car_name,
-          car_reg_no,
-          pickup_time,
-          availableSeats,
-        }; 
-    
-        // AJAX POST request
+          liveLocation: {
+            lat: pickupLat || 0,
+            lng: pickupLng || 0
+          },
+          pickupLocation: pickupLocation,
+          dropLocation: dropLocation,
+          car_name: carName,
+          car_reg_no: carRegNo,
+          availableSeats: availableSeats,
+          pickup_time: pickupTime,
+          pickup_latitude: pickupLat || 0,
+          pickup_longitude: pickupLng || 0,
+          drop_latitude: dropLat || 0,
+          drop_longitude: dropLng || 0
+        };
+
         fetch("api/saveRideDetails.php", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data), 
+          body: JSON.stringify(data),
         })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status) {
+              alert("Ride details saved successfully!");
+      
+              window.location.href = "demo.php";
+              // Clear the form
+              document.getElementById("pickup-location").value = "";
+              document.getElementById("drop-location").value = "";
+              document.getElementById("car-name").value = "";
+              document.getElementById("car-reg-no").value = "";
+              document.getElementById("seats-available").value = "1";
+              document.getElementById("pickup-time").value = "";
+            } else {
+              alert("Error saving ride details: " + data.message);
             }
-            return response.json();
-          })
-          .then((result) => {
-            alert("Ride details saved successfully!");
-            console.log(result);
-            window.location.href = "demo.php";
           })
           .catch((error) => {
-            alert("Error saving ride details.");
-            console.error(error);
+            console.error("Error:", error);
+            alert("Error saving ride details");
           });
       }
-    
+
       window.onload = initMap;
     </script>
     
   </body>
 </html>
-
