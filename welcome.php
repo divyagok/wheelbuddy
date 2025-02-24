@@ -10,14 +10,14 @@ $username = isset($_GET['username']) ? $_GET['username'] : '';
 $userLat = isset($_GET['lat']) ? $_GET['lat'] : 0;
 $userLng = isset($_GET['lng']) ? $_GET['lng'] : 0;
 
-
+$driverid = $_SESSION['id'];
 
 $ride_id = $_GET['rideid'];
 
 // Update ride status
 if ($user_id) {
-    $stmt = $conn->prepare("UPDATE driver_db SET ride_status = 'In Progress' WHERE ride_id = ?");
-    $stmt->bind_param("s", $ride_id);
+    $stmt = $conn->prepare("UPDATE driver_db SET ride_status = 'In Progress', accepted_driver= ? WHERE ride_id = ?");
+    $stmt->bind_param("ss", $driverid, $ride_id);
     $stmt->execute();
 }
 ?>
@@ -104,8 +104,8 @@ if ($user_id) {
 
     <div class="header">
       <div class="d-flex align-items-center">
-        <a href="./welcome.html" ><i class="fas fa-arrow-left text-white me-3"></i></a>
-        <a href="./newhome.html" ><i class="fas fa-home text-white"></i></a>
+        <a href="./demo.php" ><i class="fas fa-arrow-left text-white me-3"></i></a>
+        <a href="./home.html" ><i class="fas fa-home text-white"></i></a>
       </div>
       <div class="d-flex align-items-center">
         <img
@@ -121,10 +121,10 @@ if ($user_id) {
             style="cursor: pointer; font-size: 24px"
           ></i>
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="profile.php">Profile</a></li>
             <li><a class="dropdown-item" href="./settings.html">Settings</a></li>
             <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="#">Logout</a></li>
+            <li><a class="dropdown-item" href="login.html">Logout</a></li>
           </ul>
         </div>
       </div>

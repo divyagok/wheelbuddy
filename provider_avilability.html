@@ -122,8 +122,8 @@ defer
     <!-- Header -->
     <div class="header">
       <div class="d-flex align-items-center">
-        <i class="fas fa-arrow-left text-white me-3"></i>
-        <i class="fas fa-home text-white"></i>
+       <a href="og.html"> <i class="fas fa-arrow-left text-white me-3"></i></a>
+        <a href="home.html"><i class="fas fa-home text-white"></i></a>
       </div>
       <div class="d-flex align-items-center">
         <img
@@ -139,10 +139,10 @@ defer
             style="cursor: pointer; font-size: 24px"
           ></i>
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Profile</a></li>
-            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><a class="dropdown-item" href="profile.php">Profile</a></li>
+            <li><a class="dropdown-item" href="settings.html">Settings</a></li>
             <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="#">Logout</a></li>
+            <li><a class="dropdown-item" href="login.html">Logout</a></li>
           </ul>
         </div>
       </div>
@@ -199,18 +199,47 @@ defer
     <option value="5">5 Seats</option>
   </select>
   <!-- Pickup Time -->
-  <div class="form-group mb-3">
-    <label for="pickup-time" class="text-dark">Pickup Time</label>
-    <input
-      type="datetime-local"
-      id="pickup-time"
-      class="form-control"
-      style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem;"
-    />
-  </div>
+<div class="form-group mb-3">
+  <label for="pickup-time" class="text-dark">Pickup Time</label>
+  <input
+    type="datetime-local"
+    id="pickup-time"
+    class="form-control"
+    style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem;"
+    min=""
+    onchange="validatePickupTime()"
+  />
+  <small id="pickup-time-error" style="color: red; display: none;">Pickup time must be at least 10 minutes from now.</small>
+</div>
+
+<script>
+  function setMinPickupTime() {
+    let now = new Date();
+    now.setMinutes(now.getMinutes() + 10); // Add 10 minutes
+    let minDateTime = now.toISOString().slice(0, 16); // Format YYYY-MM-DDTHH:MM
+
+    document.getElementById("pickup-time").min = minDateTime;
+  }
+
+  function validatePickupTime() {
+    let selectedTime = new Date(document.getElementById("pickup-time").value);
+    let now = new Date();
+    now.setMinutes(now.getMinutes() + 10); // Add 10 minutes
+
+    if (selectedTime < now) {
+      document.getElementById("pickup-time-error").style.display = "block";
+      document.getElementById("pickup-time").value = ""; // Clear invalid input
+    } else {
+      document.getElementById("pickup-time-error").style.display = "none";
+    }
+  }
+
+  window.onload = setMinPickupTime; // Set initial min value on page load
+</script>
+
   
         <!-- Submit Button -->
-         <a href="./demo.html"></a>
+        <a href="./demo.html"></a>
         <button class="btn" onclick="saveDetails()">Offer Ride</button>
       </a>
       </div>
@@ -222,15 +251,22 @@ defer
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script>
-      let pickupAutocomplete;
-      let dropAutocomplete;
+      let map;
+      let pickupMarker, dropMarker;
+      let directionsService, directionsRenderer;
+      let pickupAutocomplete, dropAutocomplete;
       let pickupLat, pickupLng, dropLat, dropLng;
 
       function initMap() {
-        const map = new google.maps.Map(document.getElementById("map"), {
+        map = new google.maps.Map(document.getElementById("map"), {
           center: { lat: 20.5937, lng: 78.9629 },
           zoom: 5,
         });
+
+        // Initialize Directions Service
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer();
+        directionsRenderer.setMap(map);
 
         // Initialize autocomplete for pickup location
         pickupAutocomplete = new google.maps.places.Autocomplete(
@@ -241,6 +277,27 @@ defer
           if (place.geometry) {
             pickupLat = place.geometry.location.lat();
             pickupLng = place.geometry.location.lng();
+
+            // Remove previous marker if exists
+            if (pickupMarker) {
+              pickupMarker.setMap(null);
+            }
+
+            // Add Green Marker for Pickup
+            pickupMarker = new google.maps.Marker({
+              position: { lat: pickupLat, lng: pickupLng },
+              map: map,
+              icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+              title: "Pickup Location",
+            });
+
+            map.setCenter({ lat: pickupLat, lng: pickupLng });
+            map.setZoom(12);
+
+            // If both locations are set, draw route
+            if (dropLat && dropLng) {
+              drawRoute();
+            }
           }
         });
 
@@ -253,11 +310,46 @@ defer
           if (place.geometry) {
             dropLat = place.geometry.location.lat();
             dropLng = place.geometry.location.lng();
+
+            // Remove previous marker if exists
+            if (dropMarker) {
+              dropMarker.setMap(null);
+            }
+
+            // Add Red Marker for Drop
+            dropMarker = new google.maps.Marker({
+              position: { lat: dropLat, lng: dropLng },
+              map: map,
+              icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+              title: "Drop Location",
+            });
+
+            if (pickupLat && pickupLng) {
+              drawRoute();
+            }
           }
         });
       }
 
-      function saveDetails() {
+      // Function to draw route between Pickup and Drop
+      function drawRoute() {
+        const request = {
+          origin: { lat: pickupLat, lng: pickupLng },
+          destination: { lat: dropLat, lng: dropLng },
+          travelMode: google.maps.TravelMode.DRIVING,
+        };
+
+        directionsService.route(request, function (result, status) {
+          if (status === google.maps.DirectionsStatus.OK) {
+            directionsRenderer.setDirections(result);
+          } else {
+            alert("Could not display directions due to: " + status);
+          }
+        });
+      }
+
+
+          function saveDetails() {
         const pickupLocation = document.getElementById("pickup-location").value;
         const dropLocation = document.getElementById("drop-location").value;
         const carName = document.getElementById("car-name").value;
@@ -316,9 +408,10 @@ defer
             alert("Error saving ride details");
           });
       }
-
+       
       window.onload = initMap;
     </script>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

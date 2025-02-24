@@ -2,7 +2,7 @@
 
 include('config.php');
 
-// Define a function to ensure the directory exists
+// Define a function to ensure the directory exists 
 function ensureDirectoryExists($directoryPath) {
     if (!file_exists($directoryPath)) {
         if (!mkdir($directoryPath, 0755, true)) {

@@ -55,12 +55,16 @@ $conn->close();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Update Profile - Wheel Buddy</title>
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
   <style>
@@ -90,30 +94,52 @@ $conn->close();
       height: 50px;
     }
 
+    /* Profile Update Box with Outer Border */
     .form-container {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.95);
       padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      border: 2px solid #032d5a;  /* 🔹 Outer Border */
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       max-width: 800px;
       width: 100%;
       margin: auto;
       margin-top: 20px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .form-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
     }
 
     h2 {
       text-align: center;
       margin-bottom: 20px;
       font-weight: bold;
+      color: #032d5a;
+      text-transform: uppercase;
     }
 
-    .btn-primary {
-      background-color: #032d5a;
+    /* Inner Borders for Form Fields */
+    .form-group {
+      padding: 12px;
+      border-radius: 10px;
+      border: 2px solid #ddd;
+      background: #f8f9fa;
+      transition: all 0.3s ease-in-out;
+      margin-bottom: 15px;
+    }
+
+    .form-group:hover {
+      border-color: #032d5a;
+      background: #e9ecef;
+    }
+
+    .form-control {
       border: none;
-    }
-
-    .btn-primary:hover {
-      background-color: #0262a1;
+      box-shadow: none;
+      font-size: 1rem;
     }
 
     /* Profile Image Preview */
@@ -130,7 +156,29 @@ $conn->close();
       border-radius: 50%;
       object-fit: cover;
       border: 3px solid #032d5a;
+      transition: transform 0.3s ease-in-out;
     }
+
+    .profile-image-container img:hover {
+      transform: scale(1.1);
+    }
+
+    /* Button Enhancements */
+    .btn-primary {
+      background-color: #032d5a;
+      border: 2px solid transparent;
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #0262a1;
+      border-color: #fff;
+      transform: scale(1.05);
+    }
+
   </style>
 </head>
 <body>

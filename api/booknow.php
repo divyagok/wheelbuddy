@@ -12,6 +12,8 @@ try {
     $input = file_get_contents('php://input');
     $data = json_decode($input, true);
 
+    $driverid = $data['ride_id'];
+
     // Debug log
     error_log("Received booking data: " . print_r($data, true));
 
@@ -30,49 +32,55 @@ try {
     $pickup_lng = isset($_SESSION['pickup_location']['lng']) ? $_SESSION['pickup_location']['lng'] : 0;
     $drop_location = isset($_SESSION['drop_location']['address']) ? $_SESSION['drop_location']['address'] : '';
 
-    // Insert query
-    $sql = "INSERT INTO driver_db (
-        user_id,
-        driver_name,
-        car_name,
-        car_reg_no,
-        available_seats,
-        pickup_location,
-        drop_location,
-        pickup_latitude,
-        pickup_longitude,
-        ride_status
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Not Started')";
+   // Insert query
+$sql = "INSERT INTO driver_db (
+    user_id,
+    driver_name,
+    accepted_driver,
+    car_name,
+    car_reg_no,
+    available_seats,
+    pickup_location,
+    drop_location,
+    pickup_latitude,
+    pickup_longitude,
+    ride_status
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Not Started')";
 
-    error_log("SQL Query: " . $sql); // Debug log
+error_log("SQL Query: " . $sql); // Debug log
 
-    $stmt = $conn->prepare($sql);
-    if ($stmt === false) {
-        throw new Exception("Prepare failed: " . $conn->error);
-    }
+$stmt = $conn->prepare($sql);
+if ($stmt === false) {
+    throw new Exception("Prepare failed: " . $conn->error);
+}
 
-    $stmt->bind_param(
-        "isssissdd",
-        $user_id,
-        $data['driver_name'],
-        $data['car_name'],
-        $data['car_reg_no'],
-        $data['available_seats'],
-        $pickup_location,
-        $drop_location,
-        $pickup_lat,
-        $pickup_lng
-    );
+// Ensure correct number of parameters
+$stmt->bind_param(
+    "issssissdd",  // Corrected: 10 placeholders for 10 variables
+    $user_id,
+    $data['driver_name'],
+    $data['ride_id'],  // Ensure this key exists
+    $data['car_name'],
+    $data['car_reg_no'],
+    $data['available_seats'],
+    $pickup_location,
+    $drop_location,
+    $pickup_lat,
+    $pickup_lng
+);
 
-    if (!$stmt->execute()) {
-        throw new Exception("Execute failed: " . $stmt->error);
-    }
+// Execute the statement
+if (!$stmt->execute()) {
+    throw new Exception("Execute failed: " . $stmt->error);
+}
 
     // Get the last inserted ID
     $user_ride_id = $conn->insert_id;
     $_SESSION['user_ride_id'] = $user_ride_id; // Store in session
 
     error_log("User ride ID stored in session: " . $_SESSION['user_ride_id']);
+
+   
 
     // Return success response
     echo json_encode([

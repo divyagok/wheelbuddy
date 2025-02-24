@@ -138,8 +138,8 @@ if ($result->num_rows > 0) {
     <!-- Header -->
     <div class="header">
       <div class="d-flex align-items-center">
-        <i class="fas fa-arrow-left text-white me-3"></i>
-        <i class="fas fa-home text-white"></i>
+       <a href="provider_avilability.html"> <i class="fas fa-arrow-left text-white me-3"></i></a>
+        <a href="home.html"><i class="fas fa-home text-white"></i></a>
       </div>
       <div class="d-flex align-items-center">
         <img alt="Wheel Buddy logo" src="./wb.png" width="100" />
@@ -151,10 +151,10 @@ if ($result->num_rows > 0) {
             style="cursor: pointer; font-size: 24px"
           ></i>
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Profile</a></li>
-            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><a class="dropdown-item" href="profile.php">Profile</a></li>
+            <li><a class="dropdown-item" href="settings.html">Settings</a></li>
             <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="#">Logout</a></li>
+            <li><a class="dropdown-item" href="login.html">Logout</a></li>
           </ul>
         </div>
       </div>
@@ -244,26 +244,42 @@ if ($result->num_rows > 0) {
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDquoADXRiPz-PHZ61ZgOsc0EUkAymp9rw&libraries=places" defer></script>
     <script>
       let map;
+      let pickupMarkers = [];
       let geocoder;
 
-      const usersPickupLocations = [ 
-        { name: "John Doe", pickup: "Tambaram, Chennai" },
-        { name: "Jane Smith", pickup: "Indira Nagar, Bangalore" },
-      ];
-
+    
       function initMap() {
         map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: 20.5937, lng: 78.9629 }, // Centered on India
-          zoom: 5,
+            center: {lat: 20.5937, lng: 78.9629}, 
+            zoom: 5,
         });
 
-        geocoder = new google.maps.Geocoder();
+        
 
-        // Mark all users' pickup locations on the map
-        usersPickupLocations.forEach((user) => {
-          geocodeAndMark(user.pickup, user.name);
+        // Mark all user pickup locations
+        pickupLocations.forEach(location => {
+            addMarker(location.lat, location.lng, location.pickup, location.username);
         });
-      }
+
+        if (pickupLocations.length > 0) {
+            let firstPickup = pickupLocations[0];
+            map.setCenter({ lat: firstPickup.lat, lng: firstPickup.lng });
+            map.setZoom(12);
+        }
+    }
+   
+    function addMarker(lat, lng, pickup, username) {
+        if (!lat || !lng) return;
+
+        const marker = new google.maps.Marker({
+            position: { lat, lng },
+            map: map,
+            title: `Pickup: ${pickup} (User: ${username})`,
+            icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+        });
+        pickupMarkers.push(marker);
+    }
+
 
       function geocodeAndMark(address, name) {
         geocoder.geocode({ address: address }, (results, status) => {
@@ -289,13 +305,15 @@ if ($result->num_rows > 0) {
         alert(`Accepted ride request from ${pickup} to ${drop}`);
       }
 
-      window.onload = initMap;
 
       // Replace the bookNow function with this:
       function showLiveTracking(phone, drop, pickup, username, lat, lng,userid, rideid) {
         window.location.href = `welcome.php?phone=${encodeURIComponent(phone)}&pickup=${encodeURIComponent(pickup)}&drop=${encodeURIComponent(drop)}&username=${encodeURIComponent(username)}&lat=${lat}&lng=${lng}&user_id=${userid}&rideid=${rideid}`;
       }
+      
+    window.onload = initMap;
     </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
  

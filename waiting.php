@@ -87,58 +87,14 @@
 <?php
 include('api/config.php');
 
-$user_ride_id = $_SESSION['user_ride_id'] ;
- 
-            $query = "SELECT 
-                        driver_db.pickup_location, 
-                        driver_db.drop_location,
-                        driver_db.available_seats, 
-                        driver_db.pickup_latitude, 
-                        driver_db.pickup_longitude,
-                        driver_db.ride_id,
-                        driver_db.ride_status,
-                        userdetails.User_Name, 
-                        userdetails.Phone_number,
-                        driver_db.user_id
-                      FROM driver_db 
-                      INNER JOIN userdetails ON driver_db.user_id = userdetails.id 
-                      WHERE driver_db.ride_id = $user_ride_id 
-                     ";
+if (!isset($_SESSION['user_ride_id'])) {
+    header("Location: index.php");
+    exit();
+}
+?>
 
-            $result = $conn->query($query);
-
-            // Check if the query execution failed
-            if (!$result) {
-                die("Query Error: " . $conn->error);
-            }
-
-            // Check if rows exist
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    // Fetch dynamic data
-                  
-
-                    $ridestatus = $row['ride_status'];
-
-                    
-
-                    echo $ridestatus;
-                }
-            } else {
-                echo 'No data found in the table.';
-            }
-
-            // Close connection
-            $conn->close();
-        ?>
 <body>
   <!-- Header -->
-                    <div class="waiting-box">
-                      <h2>Waiting for Driver</h2>
-                      <div class="loader"></div>
-                      <p class="status-message">Your request has been sent to nearby drivers.<br>Waiting for acceptance...</p>
-                      <button class="cancel-btn" onclick="cancelRequest()">Cancel Request</button>
-                    </div>
   <div class="header">
     <div class="d-flex align-items-center">
       <i class="fas fa-arrow-left text-white me-3"></i>
@@ -149,31 +105,52 @@ $user_ride_id = $_SESSION['user_ride_id'] ;
     </div>
   </div>
 
-  <!-- Waiting Box -->
-  
-
-
+  <div class="waiting-box">
+    <h2>Waiting for Driver</h2>
+    <div class="loader"></div>
+    <p class="status-message">Your request has been sent to nearby drivers.<br>Waiting for acceptance...</p>
+    <button class="cancel-btn" onclick="cancelRequest()">Cancel Request</button>
+  </div>
 
   <script>
-    function cancelRequest() {
-      alert("Ride request cancelled!");
-      window.location.href = "home.html"; // Redirect to home or previous page
-    }
-
-    function checkDriverStatus() {
-      // Simulating API call to check if a driver accepted the ride
-      setTimeout(() => {
-        let driverAccepted = Math.random() < 0.3; // Simulate a 30% chance of acceptance
-        if (driverAccepted) {
-          alert("Driver has accepted your request!");
-          window.location.href = "user2.html"; // Redirect to ride in progress page
-        } else {
-          checkDriverStatus(); // Keep checking until a driver accepts
+    function checkRideStatus() {
+      $.ajax({
+        url: 'check_ride_status.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function(response) {
+          console.log('Current status:', response);
+          
+          if (response.status === 'In Progress') {
+            // Build the URL with parameters
+            var redirectUrl = 'user2.php?' + $.param({
+              user_lat: response.user_lat,
+              user_lng: response.user_lng,
+              user_pickup: response.user_pickup_location,
+              user_drop: response.user_drop_location,
+              driver_lat: response.driver_lat,
+              driver_lng: response.driver_lng,
+              driver_pickup: response.driver_pickup_location,
+              driver_drop: response.driver_drop_location
+            });
+            window.location.href = redirectUrl;
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('Error checking ride status:', error);
         }
-      }, 5000);
+      });
     }
 
-    window.onload = checkDriverStatus;
+    // Check status every 2 seconds
+    $(document).ready(function() {
+      setInterval(checkRideStatus, 2000);
+    });
+
+    function cancelRequest() {
+      // Add cancel request functionality here
+      window.location.href = 'index.php';
+    }
   </script>
 </body>
 </html>

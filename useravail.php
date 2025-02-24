@@ -157,8 +157,8 @@
   <!-- Header -->
   <div class="header">
     <div class="d-flex align-items-center">
-      <i class="fas fa-arrow-left text-white me-3"></i>
-      <i class="fas fa-home text-white"></i>
+     <a href="user1.html"> <i class="fas fa-arrow-left text-white me-3"></i></a>
+      <a href="home.html"><i class="fas fa-home text-white"></i></a>
     </div>
     <div class="d-flex align-items-center">
       <img alt="Wheel Buddy logo" src="./wb.png" width="100" />
@@ -166,10 +166,10 @@
         <i class="fas fa-user-circle text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
           style="cursor: pointer; font-size: 24px"></i>
         <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="#">Profile</a></li>
-          <li><a class="dropdown-item" href="#">Settings</a></li>
+          <li><a class="dropdown-item" href="profile.php">Profile</a></li>
+          <li><a class="dropdown-item" href="settings.html">Settings</a></li>
           <li><hr class="dropdown-divider" /></li>
-          <li><a class="dropdown-item" href="#">Logout</a></li>
+          <li><a class="dropdown-item" href="login.html">Logout</a></li>
         </ul>
       </div>
     </div>
@@ -196,6 +196,7 @@
         while ($row = $result->fetch_assoc()) {
             // Fetch driver details
             $driver_id = htmlspecialchars($row['driver_id']);
+            $ride_id = $row['ride_id'];
             $car_model = htmlspecialchars($row['car_name']);
             $car_reg_no = htmlspecialchars($row['car_reg_no']);
             $seats_available = (int) $row['available_seats'];
@@ -224,7 +225,7 @@
                     <p><strong>Seats Available:</strong> {$seats_available}</p>
                 </div>
           
-                <button onclick=\"bookNow('$car_model', '$driver_Name', '$car_reg_no', $seats_available, { lat: $latitude, lng: $longitude })\"> Book Now </button>
+                <button onclick=\"bookNow('$car_model', '$driver_Name', '$ride_id', '$car_reg_no', $seats_available, { lat: $latitude, lng: $longitude })\"> Book Now </button>
              
             </div>";
         }
@@ -256,14 +257,16 @@
       });
     }
 
-    async function bookNow(carModel, driverName, carRegNo, seatsAvailable, carLocation) {
+    async function bookNow(carModel, driverName, ride_id, carRegNo, seatsAvailable, carLocation ) {
       try {
         const data = {
           car_name: carModel,
           driver_name: driverName,
+          ride_id:ride_id,
           car_reg_no: carRegNo,
           available_seats: seatsAvailable,
           liveLocation: carLocation
+          
         };
 
         console.log("Sending booking data:", data);
@@ -298,5 +301,6 @@
     // Initialize map on page load
     window.onload = initMap;
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
